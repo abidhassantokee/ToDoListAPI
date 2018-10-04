@@ -13,3 +13,17 @@ Route::group([
 });
 
 Route::post('register', 'RegisterController@create');
+
+Route::group([
+    'prefix' => 'notes'
+
+], function () {
+
+    Route::get('/', 'NotesController@index');
+    Route::post('create', 'NotesController@create');
+    Route::put('update', 'NotesController@update');
+    Route::delete('delete/{id}', 'NotesController@delete');
+
+});
+
+

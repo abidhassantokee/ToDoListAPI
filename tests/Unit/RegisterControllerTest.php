@@ -34,12 +34,72 @@ class RegisterControllerTest extends TestCase
 
         $response
             ->assertStatus($expectedStatusHttp)
-            ->assertExactJson($expectedJson);
+            ->assertJson($expectedJson);
     }
 
     public function createDataProvider()
     {
         return [
+            [
+                'name' => null,
+                'email ' => null,
+                'password' => null,
+                'passwordConfirmation' => null,
+                'expectedStatusHttp' => 422,
+                'expectedJson' => [
+                    'message' => 'The given data was invalid.'
+                ]
+            ],
+            [
+                'name' => 'John Doe',
+                'email ' => null,
+                'password' => null,
+                'passwordConfirmation' => null,
+                'expectedStatusHttp' => 422,
+                'expectedJson' => [
+                    'message' => 'The given data was invalid.'
+                ]
+            ],
+            [
+                'name' => 'John Doe',
+                'email ' => 'john@doe.com',
+                'password' => null,
+                'passwordConfirmation' => null,
+                'expectedStatusHttp' => 422,
+                'expectedJson' => [
+                    'message' => 'The given data was invalid.'
+                ]
+            ],
+            [
+                'name' => 'John Doe',
+                'email ' => 'john@doe.com',
+                'password' => 'john1234',
+                'passwordConfirmation' => null,
+                'expectedStatusHttp' => 422,
+                'expectedJson' => [
+                    'message' => 'The given data was invalid.'
+                ]
+            ],
+            [
+                'name' => 'John Doe',
+                'email ' => 'john@doe.com',
+                'password' => 'john1234',
+                'passwordConfirmation' => 'john123',
+                'expectedStatusHttp' => 422,
+                'expectedJson' => [
+                    'message' => 'The given data was invalid.'
+                ]
+            ],
+            [
+                'name' => 'John Doe',
+                'email ' => 'john@doe.com',
+                'password' => 'john',
+                'passwordConfirmation' => 'john',
+                'expectedStatusHttp' => 422,
+                'expectedJson' => [
+                    'message' => 'The given data was invalid.'
+                ]
+            ],
             [
                 'name' => 'Jane Doe',
                 'email ' => 'jane@doe.com',
@@ -47,10 +107,7 @@ class RegisterControllerTest extends TestCase
                 'passwordConfirmation' => 'john1234',
                 'expectedStatusHttp' => 422,
                 'expectedJson' => [
-                    'message' => 'The given data was invalid.',
-                    'errors' => [
-                        'email' => ['The email has already been taken.']
-                    ]
+                    'message' => 'The given data was invalid.'
                 ]
             ],
             [

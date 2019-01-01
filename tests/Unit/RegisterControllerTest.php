@@ -117,7 +117,7 @@ class RegisterControllerTest extends TestCase
                 'passwordConfirmation' => 'john1234',
                 'expectedStatusHttp' => 201,
                 'expectedJson' => [
-                    'message' => 'Successfully registered'
+                    'message' => 'Successfully registered.'
                 ]
             ]
         ];

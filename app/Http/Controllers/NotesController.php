@@ -40,7 +40,7 @@ class NotesController extends Controller
         $requests = $request->all();
         $requests['user_id'] = Auth::user()->id;
         $note = Note::create($requests);
-        return response()->json(['message' => 'Successfully saved', 'note' => $note]);
+        return response()->json(['message' => 'Successfully saved.', 'note' => $note], 201);
     }
 
     /**
@@ -53,11 +53,14 @@ class NotesController extends Controller
     {
         $note = Note::findOrFail((int)$request->input('id'));
         if ($note->user_id != Auth::user()->id) {
-            return response()->json(['error' => 'Invalid user permission'], 400);
+            return response()->json(['error' => 'Invalid user permission.'], 400);
         }
+        $this->validate($request, [
+            'note' => 'required|string|max:500',
+        ]);
         $note->note = $request->input('note');
         $note->save();
-        return response()->json(['message' => 'Successfully updated']);
+        return response()->json(['message' => 'Successfully updated.']);
     }
 
     /**
@@ -70,9 +73,9 @@ class NotesController extends Controller
     {
         $note = Note::findOrFail($id);
         if ($note->user_id != Auth::user()->id) {
-            return response()->json(['error' => 'Invalid user permission'], 400);
+            return response()->json(['error' => 'Invalid user permission.'], 400);
         }
         $note->delete();
-        return response()->json(['message' => 'Successfully deleted']);
+        return response()->json(['message' => 'Successfully deleted.']);
     }
 }

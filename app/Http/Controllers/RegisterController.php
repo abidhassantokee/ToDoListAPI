@@ -28,6 +28,6 @@ class RegisterController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
         User::create($request->all());
-        return response()->json(['message' => 'Successfully registered'], 201);
+        return response()->json(['message' => 'Successfully registered.'], 201);
     }
 }

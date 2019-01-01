@@ -85,6 +85,83 @@ class NotesControllerTest extends TestCase
     }
 
     /**
+     * Notes controller update test.
+     * @test
+     * @dataProvider updateNoteDataProvider
+     * @return void
+     */
+    public function updateNote($noteId, $note, $expectedStatusHttp, $expectedJson)
+    {
+        $this->signIn();
+
+        $otherUser = factory(\App\User::class)->create();
+
+        $otherUserNote = factory(\App\Note::class)->create([
+            'user_id' => $otherUser->id
+        ]);
+
+        $currentUserNote = factory(\App\Note::class)->create([
+            'user_id' => auth()->user()->id
+        ]);
+
+        if ($noteId == 'OtherUser') {
+            $noteId = $otherUserNote->id;
+        }
+
+        if ($noteId == 'CurrentUser') {
+            $noteId = $currentUserNote->id;
+        }
+
+        $response = $this->withHeaders([
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'Authorization' => 'Bearer ' . $this->token
+        ])->json('PUT', '/api/notes/update/' . $noteId, [
+            'note' => $note
+        ]);
+
+        $response
+            ->assertStatus($expectedStatusHttp)
+            ->assertJson($expectedJson);
+    }
+
+    public function updateNoteDataProvider()
+    {
+        return [
+            [
+                'noteId' => null,
+                'note' => null,
+                'expectedStatusHttp' => 404,
+                'expectedJson' => []
+            ],
+            [
+                'noteId' => 'OtherUser',
+                'note' => null,
+                'expectedStatusHttp' => 400,
+                'expectedJson' => [
+                    'error' => 'Invalid user permission.'
+                ]
+            ],
+            [
+                'noteId' => 'CurrentUser',
+                'note' => str_repeat('Hello World ', 500),
+                'expectedStatusHttp' => 422,
+                'expectedJson' => [
+                    'message' => 'The given data was invalid.'
+                ]
+            ],
+            [
+                'noteId' => 'CurrentUser',
+                'note' => str_repeat('Hello World ', 10),
+                'expectedStatusHttp' => 200,
+                'expectedJson' => [
+                    'message' => 'Successfully updated.'
+                ]
+            ]
+        ];
+    }
+
+    /**
      * Notes controller delete test.
      * @test
      * @dataProvider deleteNoteDataProvider

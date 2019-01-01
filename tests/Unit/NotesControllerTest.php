@@ -144,6 +144,14 @@ class NotesControllerTest extends TestCase
             ],
             [
                 'noteId' => 'CurrentUser',
+                'note' => null,
+                'expectedStatusHttp' => 422,
+                'expectedJson' => [
+                    'message' => 'The given data was invalid.'
+                ]
+            ],
+            [
+                'noteId' => 'CurrentUser',
                 'note' => str_repeat('Hello World ', 500),
                 'expectedStatusHttp' => 422,
                 'expectedJson' => [

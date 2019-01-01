@@ -37,10 +37,10 @@ class NotesControllerTest extends TestCase
     /**
      * Notes controller create test.
      * @test
-     * @dataProvider createDataProvider
+     * @dataProvider createNoteDataProvider
      * @return void
      */
-    public function create($note, $expectedStatusHttp, $expectedJson)
+    public function createNote($note, $expectedStatusHttp, $expectedJson)
     {
         $this->signIn();
 
@@ -57,7 +57,7 @@ class NotesControllerTest extends TestCase
             ->assertJson($expectedJson);
     }
 
-    public function createDataProvider()
+    public function createNoteDataProvider()
     {
         return [
             [
@@ -79,6 +79,70 @@ class NotesControllerTest extends TestCase
                 'expectedStatusHttp' => 201,
                 'expectedJson' => [
                     'message' => 'Successfully saved.'
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * Notes controller delete test.
+     * @test
+     * @dataProvider deleteNoteDataProvider
+     * @return void
+     */
+    public function deleteNote($noteId, $expectedStatusHttp, $expectedJson)
+    {
+        $this->signIn();
+
+        $otherUser = factory(\App\User::class)->create();
+
+        $otherUserNote = factory(\App\Note::class)->create([
+            'user_id' => $otherUser->id
+        ]);
+
+        $currentUserNote = factory(\App\Note::class)->create([
+            'user_id' => auth()->user()->id
+        ]);
+
+        if ($noteId == 'OtherUser') {
+            $noteId = $otherUserNote->id;
+        }
+
+        if ($noteId == 'CurrentUser') {
+            $noteId = $currentUserNote->id;
+        }
+
+        $response = $this->withHeaders([
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'Authorization' => 'Bearer ' . $this->token
+        ])->json('DELETE', '/api/notes/delete/' . $noteId);
+
+        $response
+            ->assertStatus($expectedStatusHttp)
+            ->assertJson($expectedJson);
+    }
+
+    public function deleteNoteDataProvider()
+    {
+        return [
+            [
+                'noteId' => null,
+                'expectedStatusHttp' => 404,
+                'expectedJson' => []
+            ],
+            [
+                'noteId' => 'OtherUser',
+                'expectedStatusHttp' => 400,
+                'expectedJson' => [
+                    'error' => 'Invalid user permission.'
+                ]
+            ],
+            [
+                'noteId' => 'CurrentUser',
+                'expectedStatusHttp' => 200,
+                'expectedJson' => [
+                    'message' => 'Successfully deleted.'
                 ]
             ]
         ];

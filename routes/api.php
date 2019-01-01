@@ -21,7 +21,7 @@ Route::group([
 
     Route::get('/', 'NotesController@index');
     Route::post('create', 'NotesController@create');
-    Route::put('update', 'NotesController@update');
+    Route::put('update/{id}', 'NotesController@update');
     Route::delete('delete/{id}', 'NotesController@delete');
 
 });

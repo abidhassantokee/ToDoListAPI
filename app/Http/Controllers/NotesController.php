@@ -46,12 +46,13 @@ class NotesController extends Controller
     /**
      * Updates a current user's note
      *
+     * @param $id
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request)
+    public function update($id, Request $request)
     {
-        $note = Note::findOrFail((int)$request->input('id'));
+        $note = Note::findOrFail((int)$id);
         if ($note->user_id != Auth::user()->id) {
             return response()->json(['error' => 'Invalid user permission.'], 400);
         }
@@ -71,7 +72,7 @@ class NotesController extends Controller
      */
     public function delete($id)
     {
-        $note = Note::findOrFail($id);
+        $note = Note::findOrFail((int)$id);
         if ($note->user_id != Auth::user()->id) {
             return response()->json(['error' => 'Invalid user permission.'], 400);
         }
